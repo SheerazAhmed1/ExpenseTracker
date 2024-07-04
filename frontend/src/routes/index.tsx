@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
 import {
   Card,
@@ -8,10 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { api } from "./lib/api";
+import { api } from "@/lib/api";
 
 import { useQuery } from "@tanstack/react-query";
-
+export const Route = createFileRoute("/")({
+  component: Index,
+});
 async function getTotalSpent() {
   const response = await api.expenses["total-spent"].$get();
   if (!response.ok) {
@@ -21,16 +23,12 @@ async function getTotalSpent() {
   return data;
 }
 
-function App() {
+function Index() {
   // Queries
-  const { isPending, error, data, isFetching } = useQuery({
+  const { isPending, error, data } = useQuery({
     queryKey: ["total-spent"],
     queryFn: getTotalSpent,
   });
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>{error.message}</div>;
@@ -42,10 +40,8 @@ function App() {
           <CardTitle>Total Spent</CardTitle>
           <CardDescription>The total amount spent</CardDescription>
         </CardHeader>
-        <CardContent>{data?.totalSpent}</CardContent>
+        <CardContent>{isPending ? "..." : data?.totalSpent}</CardContent>
       </Card>
     </>
   );
 }
-
-export default App;
