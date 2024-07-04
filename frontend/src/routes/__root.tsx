@@ -7,7 +7,7 @@ export const Route = createRootRoute({
 
 function NavBar() {
   return (
-    <div className="p-2 flex gap-2">
+    <div className="p-2 flex gap-2 ">
       <Link to="/" className="[&.active]:font-bold">
         Home
       </Link>{" "}
@@ -27,10 +27,12 @@ function NavBar() {
 function Root() {
   return (
     <>
-      <NavBar />
-      <hr />
-      <Outlet />
-      {/* <TanStackRouterDevtools /> */}
+      <div className="">
+        <NavBar />
+        <hr />
+        <Outlet />
+        {/* <TanStackRouterDevtools /> */}
+      </div>
     </>
   );
 }

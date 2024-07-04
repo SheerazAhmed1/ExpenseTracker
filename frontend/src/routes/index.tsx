@@ -35,7 +35,7 @@ function Index() {
   }
   return (
     <>
-      <Card className="w-[350px] m-auto mt-5">
+      <Card className="w-[350px] m-auto mt-5 ">
         <CardHeader>
           <CardTitle>Total Spent</CardTitle>
           <CardDescription>The total amount spent</CardDescription>
