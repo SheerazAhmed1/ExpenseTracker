@@ -2,7 +2,9 @@ import {
   createKindeServerClient,
   GrantType,
   type SessionManager,
+  type UserType,
 } from "@kinde-oss/kinde-typescript-sdk";
+import { createFactory, createMiddleware } from "hono/factory";
 
 import { type Context } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
@@ -46,4 +48,27 @@ export const sessionManager = (c: Context): SessionManager => ({
       deleteCookie(c, key);
     });
   },
+});
+
+type Env = {
+  Variables: {
+    user: UserType;
+  };
+};
+
+export const getUser = createMiddleware<Env>(async (c, next) => {
+  try {
+    const manager = sessionManager(c);
+    const isAuthenticated = await kindeClient.isAuthenticated(manager); // Boolean: true or false
+
+    if (!isAuthenticated) {
+      return c.json({ error: "Unauthorized" }, 401);
+    } else {
+      const user = await kindeClient.getUserProfile(manager);
+      c.set("user", user);
+      await next();
+    }
+  } catch (e) {
+    console.error(e);
+  }
 });
