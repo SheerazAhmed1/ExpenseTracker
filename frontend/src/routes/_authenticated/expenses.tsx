@@ -11,9 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Skeleton } from "../../@/src/components/ui/skeleton";
+import { Skeleton } from "../../../@/src/components/ui/skeleton";
 
-export const Route = createFileRoute("/expenses")({
+export const Route = createFileRoute("/_authenticated/expenses")({
   component: Expenses,
 });
 
