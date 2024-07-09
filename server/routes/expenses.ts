@@ -5,16 +5,7 @@ import { getUser } from "../kinde";
 import { db } from "../db";
 import { expenses as expenseTable } from "../db/schema/expenses";
 import { eq, desc, sum, and } from "drizzle-orm";
-
-const expenseSchema = z.object({
-  id: z.number().int().positive().min(1),
-  title: z.string().min(3).max(50),
-  amount: z.string(),
-});
-
-type Expense = z.infer<typeof expenseSchema>;
-
-const createPostScehma = expenseSchema.omit({ id: true });
+import { createExpenseScehma } from "../sharedTypes";
 
 export const expensesRoute = new Hono()
   .get("/", getUser, async (c) => {
@@ -29,7 +20,7 @@ export const expensesRoute = new Hono()
 
     return c.json({ expenses: expenses });
   })
-  .post("/", getUser, zValidator("json", createPostScehma), async (c) => {
+  .post("/", getUser, zValidator("json", createExpenseScehma), async (c) => {
     const expense = await c.req.valid("json");
     const user = c.var.user;
     const result = await db
