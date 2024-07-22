@@ -3,9 +3,12 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { getUser } from "../kinde";
 import { db } from "../db";
-import { expenses as expenseTable } from "../db/schema/expenses";
+import {
+  expenses as expenseTable,
+  insertexpenseSchema,
+} from "../db/schema/expenses";
 import { eq, desc, sum, and } from "drizzle-orm";
-import { createExpenseScehma } from "../sharedTypes";
+import { createExpenseSchema } from "../sharedTypes";
 
 export const expensesRoute = new Hono()
   .get("/", getUser, async (c) => {
@@ -20,15 +23,16 @@ export const expensesRoute = new Hono()
 
     return c.json({ expenses: expenses });
   })
-  .post("/", getUser, zValidator("json", createExpenseScehma), async (c) => {
+  .post("/", getUser, zValidator("json", createExpenseSchema), async (c) => {
     const expense = await c.req.valid("json");
     const user = c.var.user;
+    const validatedExpense = insertexpenseSchema.parse({
+      ...expense,
+      userId: user.id,
+    });
     const result = await db
       .insert(expenseTable)
-      .values({
-        ...expense,
-        userId: user.id,
-      })
+      .values(validatedExpense)
       .returning();
 
     c.status(201);
